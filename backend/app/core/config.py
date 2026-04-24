@@ -1,10 +1,9 @@
 from functools import lru_cache
 from pathlib import Path
 from typing import List, Optional
-from urllib.parse import quote
 from zoneinfo import ZoneInfo
 
-from pydantic import AliasChoices, Field
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -16,13 +15,7 @@ class Settings(BaseSettings):
     algorithm: str = Field(default="HS256", alias="ALGORITHM")
     access_token_expire_minutes: int = Field(default=60 * 24, alias="ACCESS_TOKEN_EXPIRE_MINUTES")
 
-    mysql_host: Optional[str] = Field(default=None, validation_alias=AliasChoices("MYSQL_HOST", "MYSQLHOST"))
-    mysql_port: int = Field(default=3306, validation_alias=AliasChoices("MYSQL_PORT", "MYSQLPORT"))
-    mysql_database: Optional[str] = Field(default=None, validation_alias=AliasChoices("MYSQL_DATABASE", "MYSQLDATABASE"))
-    mysql_user: Optional[str] = Field(default=None, validation_alias=AliasChoices("MYSQL_USER", "MYSQLUSER"))
-    mysql_password: Optional[str] = Field(default=None, validation_alias=AliasChoices("MYSQL_PASSWORD", "MYSQLPASSWORD"))
-    database_url: Optional[str] = Field(default=None, validation_alias=AliasChoices("DATABASE_URL", "MYSQL_URL"))
-    auto_create_database: bool = Field(default=True, alias="AUTO_CREATE_DATABASE")
+    database_url: Optional[str] = Field(default=None, alias="DATABASE_URL")
 
     frontend_origins: str = Field(
         default="http://localhost:5173",
@@ -46,31 +39,9 @@ class Settings(BaseSettings):
 
     @property
     def resolved_database_url(self) -> str:
-        if self.database_url:
-            return self.database_url
-        missing = [
-            name
-            for name, value in [
-                ("MYSQL_HOST", self.mysql_host),
-                ("MYSQL_DATABASE", self.mysql_database),
-                ("MYSQL_USER", self.mysql_user),
-                ("MYSQL_PASSWORD", self.mysql_password),
-            ]
-            if not value
-        ]
-        if missing:
-            raise RuntimeError(
-                "Missing MySQL configuration. Set DATABASE_URL or provide: "
-                + ", ".join(missing)
-            )
-        encoded_user = quote(self.mysql_user, safe="")
-        encoded_password = quote(self.mysql_password, safe="")
-        encoded_database = quote(self.mysql_database, safe="")
-        return (
-            f"mysql+pymysql://{encoded_user}:{encoded_password}"
-            f"@{self.mysql_host}:{self.mysql_port}/{encoded_database}"
-            "?charset=utf8mb4"
-        )
+        if not self.database_url:
+            raise RuntimeError("Missing DATABASE_URL. Set it to the Railway public MySQL URL.")
+        return self.database_url
 
     @property
     def model_file(self) -> Path:
