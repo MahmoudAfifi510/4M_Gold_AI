@@ -208,6 +208,9 @@ Railway can use the included:
 - `backend/railway.toml`
 - `backend/Procfile`
 - `backend/.python-version`
+- `.python-version`
+
+The backend is pinned to Python 3.11.
 
 The production start command is:
 
