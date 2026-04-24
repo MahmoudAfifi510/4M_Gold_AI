@@ -1,6 +1,6 @@
 from datetime import datetime, date
 
-from sqlalchemy import CheckConstraint, Date, DateTime, DECIMAL, ForeignKey, Index, Integer, String, func
+from sqlalchemy import BigInteger, CheckConstraint, Date, DateTime, DECIMAL, ForeignKey, Index, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.session import Base
@@ -39,7 +39,7 @@ class GoldTransaction(Base):
     __tablename__ = "gold_buy_transactions"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     weight_oz: Mapped[float] = mapped_column(DECIMAL(18, 4), nullable=False)
     remaining_weight_oz: Mapped[float] = mapped_column(DECIMAL(18, 4), nullable=False)
     karat: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -59,7 +59,7 @@ class GoldSaleTransaction(Base):
     __tablename__ = "gold_sale_transactions"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     buy_transaction_id: Mapped[int] = mapped_column(
         ForeignKey("gold_buy_transactions.id", ondelete="CASCADE"), nullable=False, index=True
     )
