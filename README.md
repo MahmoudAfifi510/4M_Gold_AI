@@ -54,11 +54,7 @@ Because the project respects the Alpha Vantage free tier, the backend minimizes 
 1. Create a MySQL database.
 2. Copy `backend/.env.example` to `backend/.env`.
 3. Fill in:
-   - `MYSQL_HOST`
-   - `MYSQL_PORT`
-   - `MYSQL_DATABASE`
-   - `MYSQL_USER`
-   - `MYSQL_PASSWORD`
+   - `DATABASE_URL`
    - `SECRET_KEY`
    - `ALPHA_VANTAGE_API_KEY`
 4. Install Python dependencies:
@@ -81,12 +77,7 @@ The most important backend variables are:
 ```env
 ALPHA_VANTAGE_API_KEY=YOUR_API_KEY_HERE
 APP_TIMEZONE=Africa/Cairo
-MYSQL_HOST=localhost
-MYSQL_PORT=3306
-MYSQL_DATABASE=4m_gold_ai
-MYSQL_USER=root
-MYSQL_PASSWORD=your_password
-AUTO_CREATE_DATABASE=true
+DATABASE_URL=mysql+pymysql://root:your_password@localhost:3306/4m_gold_ai
 AUTO_SYNC_ON_STARTUP=true
 AUTO_TRAIN_ON_STARTUP=true
 ```
@@ -95,8 +86,7 @@ Optional:
 
 - `ALPHA_VANTAGE_BASE_URL` defaults to `https://www.alphavantage.co/query`
 - `MODEL_PATH` defaults to `artifacts/gold_model.pkl`
-- `DATABASE_URL` or `MYSQL_URL` can be used instead of separate MySQL variables
-- Railway-style MySQL names are also supported: `MYSQLHOST`, `MYSQLPORT`, `MYSQLDATABASE`, `MYSQLUSER`, `MYSQLPASSWORD`
+- `DATABASE_URL` should point to the Railway public MySQL URL in production
 
 ## Market Data Sync
 
@@ -225,22 +215,12 @@ SECRET_KEY=replace_with_a_long_random_secret
 FRONTEND_ORIGINS=https://your-netlify-site.netlify.app
 ALPHA_VANTAGE_API_KEY=your_alpha_vantage_key
 APP_TIMEZONE=Africa/Cairo
-AUTO_CREATE_DATABASE=false
 AUTO_SYNC_ON_STARTUP=true
 AUTO_TRAIN_ON_STARTUP=true
+DATABASE_URL=mysql+pymysql://USER:PASSWORD@shuttle.proxy.rlwy.net:PORT/4m_gold_ai
 ```
 
-For MySQL, either set Railway's generated `MYSQL_URL`, or use the generated separate variables:
-
-```env
-MYSQLHOST=...
-MYSQLPORT=...
-MYSQLDATABASE=...
-MYSQLUSER=...
-MYSQLPASSWORD=...
-```
-
-The app also supports the local-style names `MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_DATABASE`, `MYSQL_USER`, and `MYSQL_PASSWORD`.
+Use the Railway public MySQL URL, not the internal host.
 
 ### Frontend on Netlify
 
